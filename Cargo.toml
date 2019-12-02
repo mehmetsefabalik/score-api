@@ -1,0 +1,15 @@
+[package]
+name = "score-api"
+version = "0.1.0"
+authors = ["Mehmet Sefa Balık <sefa.balik@trendyol.com>"]
+edition = "2018"
+
+[dependencies]
+actix-web = "1.0"
+r2d2-mongodb = "0.2.2"
+r2d2 = "0.8.7"
+mongodb = "0.3.12"
+serde = "1.0.103"
+futures = "0.1"
+env_logger = "0.7.1"
+bson = "0.13.0"
