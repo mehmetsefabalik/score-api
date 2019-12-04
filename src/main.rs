@@ -25,7 +25,7 @@ fn main() {
             .data(pool.clone())
             .route("/user", web::post().to_async(controller::user::create))
             .route("/user/{user_id}", web::get().to_async(controller::user::get))
-            //.route("/score/submit", web::post().to_async(controller::submit_score))
+            .route("/user/{user_id}/score", web::put().to_async(controller::user::submit_score))
     })
     .bind("127.0.0.1:3000")
     .unwrap()

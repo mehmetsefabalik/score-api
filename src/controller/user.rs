@@ -12,7 +12,12 @@ pub struct CreateUserRequest {
 
 #[derive(Serialize, Deserialize)]
 struct CreateUserResponse {
-    user_id: bson::Bson,
+  user_id: bson::Bson,
+}
+
+#[derive(Deserialize)]
+pub struct SubmitScoreRequest {
+  score: i64,
 }
 
 pub fn create(body: web::Json<CreateUserRequest>, pool: web::Data<Pool<MongodbConnectionManager>>) -> impl Future<Item = HttpResponse, Error = Error> {
@@ -31,6 +36,18 @@ pub fn create(body: web::Json<CreateUserRequest>, pool: web::Data<Pool<MongodbCo
 
 pub fn get(path: web::Path<(String)>, pool: web::Data<Pool<MongodbConnectionManager>>) -> impl Future<Item = HttpResponse, Error = Error> {
   web::block(move || crate::service::user::get(&path, pool)).then(|_result| match _result {
+    Ok(get_result) => {
+      match get_result {
+        Some(result) => HttpResponse::Ok().json(result),
+        None => HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR),
+      }
+    },
+    Err(_) => HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR),
+  })
+}
+
+pub fn submit_score(path: web::Path<(String)>, body: web::Json<SubmitScoreRequest>, pool: web::Data<Pool<MongodbConnectionManager>>) -> impl Future<Item = HttpResponse, Error = Error> {
+  web::block(move || crate::service::user::increment_score(&path, body.score, pool)).then(|_result| match _result {
     Ok(get_result) => {
       match get_result {
         Some(result) => HttpResponse::Ok().json(result),
